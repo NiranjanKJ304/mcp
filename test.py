@@ -1,8 +1,21 @@
-from tools import get_users
-from fastmcp import FastMCP
+import asyncio
+from mcp_client import GitHubMCPClient
 
-users = get_users(limit=10)
+async def main():
+    github = GitHubMCPClient()
+    try:
+        print("Connecting to GitHub MCP...")
+        await github.connect()
+        tools = await github.list_tools()
+        print("\nAvailable tools:\n")
+        for tool in tools:
+            print("-", tool.name)
+        print("\nCalling get_me...\n")
+        result = await github.call_tool("get_me", {})
+        print("Result:")
+        print(result)
+    finally:
+        await github.disconnect()
 
-userid = get_users(user_id=60)
-print(userid)
-print(users)
+if __name__ == "__main__":
+    asyncio.run(main())
